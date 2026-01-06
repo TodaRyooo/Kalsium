@@ -1,11 +1,6 @@
 import { Button } from "@/components/composites/button";
 import { Input } from "@/components/composites/input";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/composites/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/composites/card";
 import { Text } from "@/components/composites/text";
 import { Separator } from "@/components/ui/separator";
 
@@ -15,9 +10,7 @@ export default function Page() {
       <Card>
         <CardHeader className="space-y-1 text-center">
           <CardTitle>Kalsium</CardTitle>
-          <Text className="text-muted-foreground text-sm">
-            Enter your credentials to access your vault
-          </Text>
+          <Text className="text-muted-foreground text-sm">Enter your credentials to access your vault</Text>
         </CardHeader>
         <CardContent className="grid gap-6">
           <div className="grid gap-4">

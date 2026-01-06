@@ -7,16 +7,10 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
-      <body className={`${jetbrainsMono.variable} font-mono antialiased`}>
-        {children}
-      </body>
+      <body className={`${jetbrainsMono.variable} font-mono antialiased`}>{children}</body>
     </html>
   );
 }

@@ -26,7 +26,5 @@ export const Text = ({ variant = "p", as, className, ...props }: TextProps) => {
 
   const Component = as || tagMap[variant];
 
-  return (
-    <Component className={cn(variantStyles[variant], className)} {...props} />
-  );
+  return <Component className={cn(variantStyles[variant], className)} {...props} />;
 };

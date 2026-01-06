@@ -1,10 +1,7 @@
 import { Button as BaseButton } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-export const Button = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof BaseButton>) => {
+export const Button = ({ className, ...props }: React.ComponentProps<typeof BaseButton>) => {
   return (
     <BaseButton
       className={cn(
