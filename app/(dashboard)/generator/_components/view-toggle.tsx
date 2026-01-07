@@ -1,5 +1,6 @@
 "use client";
 
+import styles from "@/app/(dashboard)/generator/_components/view-toggle.module.scss";
 import { KeyRound, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -11,23 +12,22 @@ interface ViewToggleProps {
 }
 
 export const ViewToggle = ({ currentView, onViewChange }: ViewToggleProps) => {
-  const baseStyle = "p-2 rounded-full transition-all duration-200 cursor-pointer";
-  const activeStyle = "bg-slate-900 text-white shadow-sm";
-  const inactiveStyle = "text-slate-400 hover:bg-slate-100";
-
   return (
-    <div className="mb-6 flex items-center justify-center">
-      <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1 shadow-sm">
+    <div className="mb-6 flex justify-center">
+      <div className={styles.toggleContainer}>
+        {/* 背景の丸 */}
+        <div className={cn(styles.pill, styles[currentView])} />
+
         <div
           onClick={() => onViewChange("generator")}
-          className={cn(baseStyle, currentView === "generator" ? activeStyle : inactiveStyle)}
+          className={cn(styles.toggleButton, currentView === "generator" && styles.active)}
         >
           <KeyRound size={20} />
         </div>
 
         <div
           onClick={() => onViewChange("storage")}
-          className={cn(baseStyle, currentView === "storage" ? activeStyle : inactiveStyle)}
+          className={cn(styles.toggleButton, currentView === "storage" && styles.active)}
         >
           <Database size={20} />
         </div>

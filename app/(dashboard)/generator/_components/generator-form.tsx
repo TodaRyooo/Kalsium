@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/composites/button";
 import { Card, CardContent } from "@/components/composites/card";
 import { Text } from "@/components/composites/text";
@@ -10,13 +9,17 @@ import { Label } from "@/components/composites/label";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/composites/input";
 import { cn } from "@/lib/utils";
+import { useAtom } from "jotai";
+import { identityAtom, notesAtom, passwordsAtom, selectedPasswordAtom } from "@/stores/generators";
 
 const SUPPORTED_LENGTHS = [8, 12, 16, 24, 32, 64] as const;
 const GENERATION_COUNTS = [1, 5, 10, 20, 50] as const;
 
 export const GeneratorForm = () => {
-  const [passwords, setPasswords] = useState<string[]>([]);
-  const [selectedPassword, setSelectedPassword] = useState<string>("");
+  const [passwords, setPasswords] = useAtom(passwordsAtom);
+  const [selectedPassword, setSelectedPassword] = useAtom(selectedPasswordAtom);
+  const [identity, setIdentity] = useAtom(identityAtom);
+  const [notes, setNotes] = useAtom(notesAtom);
 
   const handleGenerate = () => {
     setPasswords(["Qwerty123", "Asdfgh456", "Zxcvbn789", "Kalsium2026", "Vault_Secret"]);
@@ -133,7 +136,7 @@ export const GeneratorForm = () => {
           <CardContent className="grid gap-4 pt-6">
             <div className="space-y-2">
               <Label>Identity (Username or Email)</Label>
-              <Input placeholder="user@example.com" />
+              <Input placeholder="user@example.com" value={identity} onChange={(e) => setIdentity(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label>Password</Label>
@@ -149,6 +152,8 @@ export const GeneratorForm = () => {
               <textarea
                 className="flex min-h-[80px] w-full rounded-md border border-slate-200 bg-transparent px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="Where is this used?"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               />
             </div>
             <Button className="w-full bg-slate-900 text-white hover:bg-slate-800" disabled={!selectedPassword}>
