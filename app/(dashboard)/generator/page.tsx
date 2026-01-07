@@ -1,10 +1,9 @@
-// app/(dashboard)/generator/page.tsx
 "use client";
 
 import { useState } from "react";
 import { Text } from "@/components/composites/text";
 import { GeneratorForm } from "./_components/generator-form";
-import { StorageView } from "./_components/storage-view"; // 追加
+import { StorageView } from "./_components/storage-view";
 import { ViewToggle } from "./_components/view-toggle";
 
 export default function Page() {
