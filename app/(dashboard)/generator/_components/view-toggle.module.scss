@@ -1,0 +1,47 @@
+.toggleContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0; // slate-200
+  background-color: #ffffff;
+  padding: 4px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  width: 128px; // w-32
+}
+
+.pill {
+  position: absolute;
+  height: calc(100% - 8px);
+  width: calc(50% - 4px);
+  border-radius: 9999px;
+  background-color: #0f172a; // slate-900
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+
+  &.storage {
+    transform: translateX(100%);
+  }
+
+  &.generator {
+    transform: translateX(0);
+  }
+}
+
+.toggleButton {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  padding: 8px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  color: #94a3b8; // slate-400
+
+  &.active {
+    color: #ffffff;
+  }
+}
