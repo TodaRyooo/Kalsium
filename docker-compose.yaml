@@ -1,16 +1,48 @@
+# services:
+#   app:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     volumes:
+#       - .:/app
+#       - /app/node_modules # ホストからマウントさせない（コンテナ側を優先）
+#       - /app/.next # ビルドキャッシュの永続化
+#     ports:
+#       - "3000:3000"
+#     environment:
+#       - WATCHPACK_POLLING=true # Win/Mac環境でHMRが効かない場合の対策
+#       - NODE_ENV=development
+#     stdin_open: true # Neovim等の対話的な操作が必要な場合のため
+#     tty: true
+
 services:
-  app:
+  frontend:
     build:
-      context: .
+      context: ./FE
       dockerfile: Dockerfile
     volumes:
-      - .:/app
-      - /app/node_modules # ホストからマウントさせない（コンテナ側を優先）
-      - /app/.next # ビルドキャッシュの永続化
+      - ./FE:/app
+      - /app/node_modules
+      - /app/.next
     ports:
       - "3000:3000"
     environment:
-      - WATCHPACK_POLLING=true # Win/Mac環境でHMRが効かない場合の対策
+      - WATCHPACK_POLLING=true
       - NODE_ENV=development
-    stdin_open: true # Neovim等の対話的な操作が必要な場合のため
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+    stdin_open: true
+    tty: true
+
+  backend:
+    build:
+      context: ./BE
+      dockerfile: Dockerfile
+      target: dev # DockerfileでAS devと定義した場合
+    volumes:
+      - ./BE:/app
+    ports:
+      - "8080:8080"
+    environment:
+      - GO_ENV=development
+    stdin_open: true
     tty: true
