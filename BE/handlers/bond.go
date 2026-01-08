@@ -4,8 +4,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/todaryooo/kalsium-be/models"
+	// "golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -25,8 +27,13 @@ func PostBond(db *gorm.DB) echo.HandlerFunc {
 			return err
 		}
 
+		// hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Pass), bcrypt.DefaultCost)
+		// if err != nil {
+		// 	return echo.NewHTTPError(http.StatusInternalServerError, "パスワードの処理に失敗しました")
+		// }
+
 		newBond := models.Bond{
-			ID:        "tmp-id-123",
+			ID:        uuid.New().String(),
 			UserID:    "guest-user",
 			IsDelete:  false,
 			Identity:  req.Identity,

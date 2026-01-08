@@ -7,7 +7,7 @@ type Bond struct {
 	UserID    string    `json:"user_id"`
 	IsDelete  bool      `json:"is_delete"`
 	Identity  string    `json:"identity"`
-	Pass      string    `json:"pass"` // 注意：平文保存は厳禁！
+	Pass      string    `json:"pass"` // リリース前にAES暗号化に切り替える
 	Note      string    `json:"note"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
