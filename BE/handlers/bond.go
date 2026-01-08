@@ -56,6 +56,37 @@ func PostBond(db *gorm.DB) echo.HandlerFunc {
 	}
 }
 
+func UpdateBond(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id")
+
+		var req models.UpdateBondRequest
+
+		if err := c.Bind(&req); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
+		}
+
+		result := db.Model(&models.Bond{}).
+			Where("id = ? AND is_delete = ?", id, false).
+			Select("Identity", "Note", "updated_at").
+			Updates(map[string]interface{}{
+				"identity":   req.Identity,
+				"note":       req.Note,
+				"updated_at": time.Now(),
+			})
+
+		if result.Error != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update"})
+		}
+
+		if result.RowsAffected == 0 {
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "Bond not found"})
+		}
+
+		return c.JSON(http.StatusOK, map[string]string{"message": "Updated successfully"})
+	}
+}
+
 func DeleteBond(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		id := c.Param("id")

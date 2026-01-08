@@ -40,6 +40,7 @@ func main() {
 	// ルーティング
 	e.GET("/bonds", handlers.GetBonds(db))
 	e.POST("/bonds", handlers.PostBond(db))
+	e.PUT("/bonds/:id", handlers.UpdateBond(db))
 	e.DELETE("/bonds/:id", handlers.DeleteBond(db))
 
 	e.Logger.Fatal(e.Start(":8080"))

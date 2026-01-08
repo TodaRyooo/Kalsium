@@ -13,9 +13,13 @@ type Bond struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// リクエスト用（フロントから送られてくる最小構成）
 type CreateBondRequest struct {
 	Identity string `json:"identity"`
 	Pass     string `json:"pass"`
+	Note     string `json:"note"`
+}
+
+type UpdateBondRequest struct {
+	Identity string `json:"identity"`
 	Note     string `json:"note"`
 }
