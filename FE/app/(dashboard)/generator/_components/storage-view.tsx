@@ -1,21 +1,20 @@
 "use client";
 
-import { Text } from "@/components/composites/text";
+import { getReq } from "@/lib/fetcher";
+import useSWR from "swr";
+import { BondCard } from "@/app/(dashboard)/generator/_components/bond-card";
 
 export const StorageView = () => {
-  const hasBonds = false;
+  const { data: bonds, isLoading } = useSWR<Bond[]>("/bonds", getReq);
+
+  if (isLoading) return <div>...</div>;
+  if (!bonds) return <div>...</div>;
 
   return (
-    <div className="w-full">
-      {!hasBonds ? (
-        <div className="flex h-64 w-full items-center justify-center rounded-lg border border-dashed border-slate-200 bg-slate-50/30">
-          <Text variant="muted">There are no `Bonds` saved.</Text>
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          <Text>Your Saved Bonds will appear here.</Text>
-        </div>
-      )}
+    <div className="grid gap-3">
+      {bonds.map((bond) => (
+        <BondCard key={bond.id} bond={bond} />
+      ))}
     </div>
   );
 };

@@ -12,6 +12,9 @@ import { cn } from "@/lib/utils";
 import { useAtom } from "jotai";
 import { identityAtom, notesAtom, passwordsAtom, selectedPasswordAtom } from "@/stores/generators";
 
+import useSWRMutation from "swr/mutation";
+import { postReq } from "@/lib/fetcher";
+
 const SUPPORTED_LENGTHS = [8, 12, 16, 24, 32, 64] as const;
 const GENERATION_COUNTS = [1, 5, 10, 20, 50] as const;
 
@@ -20,6 +23,14 @@ export const GeneratorForm = () => {
   const [selectedPassword, setSelectedPassword] = useAtom(selectedPasswordAtom);
   const [identity, setIdentity] = useAtom(identityAtom);
   const [notes, setNotes] = useAtom(notesAtom);
+
+  const { trigger } = useSWRMutation("/bonds", postReq<PostBondArgs>);
+
+  const handleCreate = async () => {
+    if (!selectedPassword) return;
+    await trigger({ identity, pass: selectedPassword, note: notes });
+    console.log("done");
+  };
 
   const handleGenerate = () => {
     setPasswords(["Qwerty123", "Asdfgh456", "Zxcvbn789", "Kalsium2026", "Vault_Secret"]);
@@ -156,7 +167,11 @@ export const GeneratorForm = () => {
                 onChange={(e) => setNotes(e.target.value)}
               />
             </div>
-            <Button className="w-full bg-slate-900 text-white hover:bg-slate-800" disabled={!selectedPassword}>
+            <Button
+              className="w-full bg-slate-900 text-white hover:bg-slate-800"
+              disabled={!selectedPassword}
+              onClick={handleCreate}
+            >
               Create Bond
             </Button>
           </CardContent>
