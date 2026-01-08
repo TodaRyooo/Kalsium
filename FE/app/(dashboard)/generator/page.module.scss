@@ -41,7 +41,7 @@
   transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 
   &.hidden {
-    position: absolute; // 重なりを防ぐ
+    position: absolute;
     top: 0;
     left: 0;
     opacity: 0;

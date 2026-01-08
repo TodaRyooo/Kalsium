@@ -74,7 +74,7 @@ export const BondCard = ({ bond }: { bond: Bond }) => {
         />
       </div>
 
-      <CardContent className="p-4" onClick={handleCopyToClip}>
+      <CardContent onClick={handleCopyToClip}>
         <div className="flex flex-col gap-2">
           <Text className="pr-8 font-medium text-slate-900">{bond.identity}</Text>
 

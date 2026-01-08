@@ -13,7 +13,7 @@ interface ViewToggleProps {
 
 export const ViewToggle = ({ currentView, onViewChange }: ViewToggleProps) => {
   return (
-    <div className="mb-6 flex justify-center">
+    <div className="flex justify-center">
       <div className={styles.toggleContainer}>
         {/* 背景の丸 */}
         <div className={cn(styles.pill, styles[currentView])} />

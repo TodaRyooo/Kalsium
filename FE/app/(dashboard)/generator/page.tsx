@@ -12,8 +12,8 @@ export default function Page() {
   const [view, setView] = useState<"generator" | "storage">("generator");
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-64px)] w-full flex-col justify-start pb-10">
-      <div className="sticky top-[0px] z-30 mx-8 mb-12 bg-white/60 [mask-image:linear-gradient(to_bottom,black_75%,transparent)] pt-16 pb-12 text-center backdrop-blur-md">
+    <div className="mx-auto flex min-h-[calc(100vh-24px)] w-full flex-col justify-start pb-10">
+      <div className="sticky top-[0px] z-30 mx-8 flex flex-col gap-2 bg-white/75 [mask-image:linear-gradient(to_bottom,black_80%,transparent)] py-6 text-center backdrop-blur-md">
         <ViewToggle currentView={view} onViewChange={setView} />
         <div className={styles.textStack}>
           <Text variant="h1" className={cn(styles.textItem, view === "generator" ? styles.visible : styles.hidden)}>
@@ -29,17 +29,14 @@ export default function Page() {
             Manage your security with precision.
           </Text>
           <Text variant="muted" className={cn(styles.textItem, view === "storage" ? styles.visible : styles.hidden)}>
-            Access and organize your saved credentials.
+            Access and organize your saved Bonds.
           </Text>
         </div>
       </div>
 
       <div className={cn(styles.viewContainer, "px-12")}>
-        <div className={cn(styles.viewContent, view === "generator" ? styles.visible : styles.hidden)}>
-          <GeneratorForm />
-        </div>
-        <div className={cn(styles.viewContent, view === "storage" ? styles.visible : styles.hidden)}>
-          <StorageView />
+        <div className={cn(styles.viewContent, styles.visible)}>
+          {view === "generator" ? <GeneratorForm /> : <StorageView />}
         </div>
       </div>
     </div>
