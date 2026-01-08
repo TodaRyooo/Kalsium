@@ -7,8 +7,8 @@ import { BondCard } from "@/app/(dashboard)/generator/_components/bond-card";
 export const StorageView = () => {
   const { data: bonds, isLoading } = useSWR<Bond[]>("/bonds", getReq);
 
-  if (isLoading) return <div>...</div>;
-  if (!bonds) return <div>...</div>;
+  if (isLoading) return <div>Loading Bonds...</div>;
+  if (!bonds) return <div>No Bonds found</div>;
 
   return (
     <div className="grid gap-3">
