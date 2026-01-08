@@ -15,6 +15,11 @@ func GetBonds(db *gorm.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var bonds []models.Bond
 		db.Find(&bonds)
+
+		if err := db.Where("is_delete = ?", false).Find(&bonds).Error; err != nil {
+			return err
+		}
+
 		return c.JSON(http.StatusOK, bonds)
 
 	}
@@ -48,5 +53,16 @@ func PostBond(db *gorm.DB) echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusCreated, newBond)
+	}
+}
+
+func DeleteBond(db *gorm.DB) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id")
+		if err := db.Model(&models.Bond{}).Where("id = ?", id).Update("is_delete", true).Error; err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "削除処理に失敗しました")
+		}
+
+		return c.NoContent(http.StatusNoContent)
 	}
 }
