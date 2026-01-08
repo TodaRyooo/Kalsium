@@ -73,7 +73,7 @@ export const BondCard = ({ bond }: { bond: Bond }) => {
           </div>
 
           {bond.note && (
-            <Text variant="muted" className="text-xs italic">
+            <Text variant="muted" className="text-xs">
               {bond.note}
             </Text>
           )}
