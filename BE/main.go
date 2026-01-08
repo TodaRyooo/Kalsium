@@ -3,12 +3,23 @@ package main
 import (
 	"net/http"
 
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/todaryooo/kalsium-be/handlers"
+	"github.com/todaryooo/kalsium-be/models"
 )
 
 func main() {
+	db, err := gorm.Open(sqlite.Open("kalsium.db"), &gorm.Config{})
+	if err != nil {
+		panic("faild to connect database")
+	}
+
+	db.AutoMigrate(&models.Bond{})
+
 	e := echo.New()
 
 	// ミドルウェアの設定
@@ -27,8 +38,8 @@ func main() {
 	})
 
 	// ルーティング
-	e.GET("/bonds", handlers.GetBonds)
-	e.POST("/bonds", handlers.PostBond)
+	e.GET("/bonds", handlers.GetBonds(db))
+	e.POST("/bonds", handlers.PostBond(db))
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

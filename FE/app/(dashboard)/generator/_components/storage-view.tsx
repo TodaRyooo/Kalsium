@@ -2,8 +2,13 @@
 
 import { Text } from "@/components/composites/text";
 
+import useSWR from "swr";
+import { getReq } from "@/lib/fetcher";
+
 export const StorageView = () => {
-  const hasBonds = false;
+  const hasBonds = true;
+  const { data: bonds, error, isLoading } = useSWR("/bonds", getReq);
+  console.log("data", bonds);
 
   return (
     <div className="w-full">
@@ -13,7 +18,7 @@ export const StorageView = () => {
         </div>
       ) : (
         <div className="grid gap-4">
-          <Text>Your Saved Bonds will appear here.</Text>
+          <Text>{bonds ? Object.keys(bonds?.[0]).map((k) => `${bonds[0][k]}\n`) : "none"}</Text>
         </div>
       )}
     </div>

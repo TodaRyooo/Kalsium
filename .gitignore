@@ -1,0 +1,59 @@
+# --- Project Root / OS ---
+.DS_Store
+*.pem
+.vscode/
+.idea/
+
+# --- Frontend (Next.js / Node.js) ---
+# dependencies
+FE/node_modules/
+FE/.pnp
+FE/.pnp.*
+FE/.yarn/*
+!FE/.yarn/patches
+!FE/.yarn/plugins
+!FE/.yarn/releases
+!FE/.yarn/versions
+
+# testing
+FE/coverage/
+
+# next.js
+FE/.next/
+FE/out/
+
+# production
+FE/build/
+
+# debug
+FE/npm-debug.log*
+FE/yarn-debug.log*
+FE/yarn-error.log*
+FE/.pnpm-debug.log*
+
+# env files
+FE/.env*
+
+# vercel
+FE/.vercel/
+
+# typescript
+FE/*.tsbuildinfo
+FE/next-env.d.ts
+FE/.bun-build/
+
+# --- Backend (Go / GORM / SQLite) ---
+# Database (SQLite binary files)
+BE/kalsium.db
+BE/kalsium.db-journal
+BE/kalsium.db-wal
+
+# Go binaries
+BE/bin/
+BE/main
+BE/*.exe
+BE/*.test
+BE/*.prof
+
+# Backend env files
+BE/.env*

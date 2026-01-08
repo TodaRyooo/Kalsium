@@ -9,13 +9,12 @@ import { ViewToggle } from "./_components/view-toggle";
 import { cn } from "@/lib/utils";
 
 import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher";
+import { getReq } from "@/lib/fetcher";
 
 export default function Page() {
   const [view, setView] = useState<"generator" | "storage">("generator");
-  const { data: bonds, error, isLoading } = useSWR("/bonds", fetcher);
-  console.log("data", bonds);
-  console.error("data", error);
+  // const { data: bonds, error, isLoading } = useSWR("/bonds", getReq);
+  // console.log("data", bonds);
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-64px)] w-full flex-col justify-start px-8 py-10 md:px-16">
