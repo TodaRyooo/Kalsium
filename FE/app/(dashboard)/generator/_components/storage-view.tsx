@@ -11,7 +11,7 @@ export const StorageView = () => {
   if (!bonds) return <div>No Bonds found</div>;
 
   return (
-    <div className="grid gap-3">
+    <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {bonds.map((bond) => (
         <BondCard key={bond.id} bond={bond} />
       ))}
