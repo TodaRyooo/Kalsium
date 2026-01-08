@@ -51,7 +51,7 @@ export const EditBondDialog = ({ bond }: { bond: Bond }) => {
         </div>
       }
       actionLabel={isMutating ? "Saving..." : "Save Changes"}
-      onConfirm={() => handleUpdate(bond.id)}
+      onConfirm={() => handleUpdate()}
       trigger={
         <button className="rounded-md p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
           <Pencil size={16} />
