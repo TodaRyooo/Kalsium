@@ -1,17 +1,18 @@
 package handlers
 
 import (
+	"encoding/base64"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"github.com/todaryooo/kalsium-be/crypto"
 	"github.com/todaryooo/kalsium-be/models"
-	// "golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-func GetBonds(db *gorm.DB) echo.HandlerFunc {
+func GetBonds(db *gorm.DB, masterKey []byte) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var bonds []models.Bond
 		db.Find(&bonds)
@@ -20,29 +21,42 @@ func GetBonds(db *gorm.DB) echo.HandlerFunc {
 			return err
 		}
 
+		for i := range bonds {
+			ciphertext, err := base64.StdEncoding.DecodeString(bonds[i].Pass)
+			if err != nil {
+				continue // デコード失敗はスキップ
+			}
+			decrypted, err := crypto.Decrypt(ciphertext, masterKey)
+			if err == nil {
+				bonds[i].Pass = string(decrypted)
+			}
+		}
+
 		return c.JSON(http.StatusOK, bonds)
 
 	}
 }
 
-func PostBond(db *gorm.DB) echo.HandlerFunc {
+func PostBond(db *gorm.DB, masterKey []byte) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		req := new(models.CreateBondRequest)
 		if err := c.Bind(req); err != nil {
 			return err
 		}
 
-		// hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Pass), bcrypt.DefaultCost)
-		// if err != nil {
-		// 	return echo.NewHTTPError(http.StatusInternalServerError, "パスワードの処理に失敗しました")
-		// }
+		encryptedBytes, err := crypto.Encrypt([]byte(req.Pass), masterKey)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "暗号化に失敗しました")
+		}
+
+		encodedPass := base64.StdEncoding.EncodeToString(encryptedBytes)
 
 		newBond := models.Bond{
 			ID:        uuid.New().String(),
 			UserID:    "guest-user",
 			IsDelete:  false,
 			Identity:  req.Identity,
-			Pass:      req.Pass,
+			Pass:      encodedPass,
 			Note:      req.Note,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
@@ -52,6 +66,7 @@ func PostBond(db *gorm.DB) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusInternalServerError, "DBへの保存に失敗しました")
 		}
 
+		newBond.Pass = req.Pass
 		return c.JSON(http.StatusCreated, newBond)
 	}
 }

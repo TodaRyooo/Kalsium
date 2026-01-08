@@ -1,13 +1,16 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/todaryooo/kalsium-be/config"
 	"github.com/todaryooo/kalsium-be/handlers"
 	"github.com/todaryooo/kalsium-be/models"
 )
@@ -20,10 +23,18 @@ func main() {
 
 	db.AutoMigrate(&models.Bond{})
 
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using system environment variables")
+	}
+
+	masterKey, err := config.LoadMasterKey()
+	if err != nil {
+		log.Fatalf("Failed to load crypto key: %v", err)
+	}
+
 	e := echo.New()
 
-	// ミドルウェアの設定
-	e.Use(middleware.Logger())
+	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:3000"},
@@ -38,8 +49,8 @@ func main() {
 	})
 
 	// ルーティング
-	e.GET("/bonds", handlers.GetBonds(db))
-	e.POST("/bonds", handlers.PostBond(db))
+	e.GET("/bonds", handlers.GetBonds(db, masterKey))
+	e.POST("/bonds", handlers.PostBond(db, masterKey))
 	e.PUT("/bonds/:id", handlers.UpdateBond(db))
 	e.DELETE("/bonds/:id", handlers.DeleteBond(db))
 
