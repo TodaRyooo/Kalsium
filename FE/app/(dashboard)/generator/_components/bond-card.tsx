@@ -12,6 +12,8 @@ import { EditBondDialog } from "@/app/(dashboard)/generator/_components/edit-bon
 export const BondCard = ({ bond }: { bond: Bond }) => {
   const { trigger } = useSWRMutation(`/bonds/${bond.id}`, deleteReq, { onSuccess: () => mutate("/bonds") });
 
+  const handleCopyToClip = () => navigator.clipboard.writeText(bond.pass);
+
   const handleDelete = async () => {
     try {
       await trigger();
@@ -64,7 +66,7 @@ export const BondCard = ({ bond }: { bond: Bond }) => {
         />
       </div>
 
-      <CardContent className="p-4">
+      <CardContent className="p-4" onClick={handleCopyToClip}>
         <div className="flex flex-col gap-2">
           <Text className="pr-8 font-medium text-slate-900">{bond.identity}</Text>
 
