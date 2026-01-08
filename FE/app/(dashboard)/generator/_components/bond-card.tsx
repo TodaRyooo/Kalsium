@@ -9,13 +9,6 @@ import { Card, CardContent } from "@/components/composites/card";
 import { AlertDialog } from "@/components/composites/alert-dialog";
 import { EditBondDialog } from "@/app/(dashboard)/generator/_components/edit-bond-dialog";
 
-interface Bond {
-  id: string;
-  identity: string;
-  pass: string;
-  note: string;
-}
-
 export const BondCard = ({ bond }: { bond: Bond }) => {
   const { trigger } = useSWRMutation(`/bonds/${bond.id}`, deleteReq, { onSuccess: () => mutate("/bonds") });
 

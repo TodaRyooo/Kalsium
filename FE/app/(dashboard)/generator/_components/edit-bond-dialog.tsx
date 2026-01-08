@@ -6,18 +6,13 @@ import useSWRMutation from "swr/mutation";
 import { putReq } from "@/lib/fetcher";
 import { mutate } from "swr";
 
-interface Bond {
-  id: string;
-  identity: string;
-  pass: string;
-  note: string;
-}
-
 export const EditBondDialog = ({ bond }: { bond: Bond }) => {
   const [identity, setIdentity] = useState(bond.identity);
   const [note, setNote] = useState(bond.note);
 
-  const { trigger, isMutating } = useSWRMutation(`/bonds/${bond.id}`, putReq, { onSuccess: () => mutate("/bonds") });
+  const { trigger, isMutating } = useSWRMutation(`/bonds/${bond.id}`, putReq<UpdateBondArgs>, {
+    onSuccess: () => mutate("/bonds"),
+  });
 
   const handleUpdate = async () => {
     try {

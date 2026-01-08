@@ -24,7 +24,7 @@ export const GeneratorForm = () => {
   const [identity, setIdentity] = useAtom(identityAtom);
   const [notes, setNotes] = useAtom(notesAtom);
 
-  const { trigger, isMutating } = useSWRMutation("/bonds", postReq);
+  const { trigger } = useSWRMutation("/bonds", postReq<PostBondArgs>);
 
   const handleCreate = async () => {
     if (!selectedPassword) return;

@@ -14,6 +14,6 @@ export const api = async (path: string, options?: RequestInit) => {
 };
 
 export const getReq = (path: string) => api(path);
-export const postReq = (url: string, { arg }: { arg: any }) => api(url, { method: "POST", body: JSON.stringify(arg) });
-export const putReq = (url: string, { arg }: { arg: any }) => api(url, { method: "PUT", body: JSON.stringify(arg) });
+export const postReq = <T>(url: string, { arg }: { arg: T }) => api(url, { method: "POST", body: JSON.stringify(arg) });
+export const putReq = <T>(url: string, { arg }: { arg: T }) => api(url, { method: "PUT", body: JSON.stringify(arg) });
 export const deleteReq = (url: string) => api(url, { method: "DELETE" });
