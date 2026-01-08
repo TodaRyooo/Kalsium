@@ -1,4 +1,5 @@
 import { JetBrains_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import "@/app/globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -10,7 +11,10 @@ const jetbrainsMono = JetBrains_Mono({
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">
-      <body className={`${jetbrainsMono.variable} font-mono antialiased`}>{children}</body>
+      <body className={`${jetbrainsMono.variable} font-mono antialiased`}>
+        {children}
+        <Toaster richColors />
+      </body>
     </html>
   );
 }

@@ -4,6 +4,7 @@ import { deleteReq } from "@/lib/fetcher";
 import { mutate } from "swr";
 import useSWRMutation from "swr/mutation";
 
+import { toast } from "sonner";
 import { Text } from "@/components/composites/text";
 import { Card, CardContent } from "@/components/composites/card";
 import { AlertDialog } from "@/components/composites/alert-dialog";
@@ -12,7 +13,14 @@ import { EditBondDialog } from "@/app/(dashboard)/generator/_components/edit-bon
 export const BondCard = ({ bond }: { bond: Bond }) => {
   const { trigger } = useSWRMutation(`/bonds/${bond.id}`, deleteReq, { onSuccess: () => mutate("/bonds") });
 
-  const handleCopyToClip = () => navigator.clipboard.writeText(bond.pass);
+  const handleCopyToClip = async () => {
+    try {
+      await navigator.clipboard.writeText(bond.pass);
+      toast.success("Copied", { position: "top-center", duration: 2000 });
+    } catch (e) {
+      toast.error("Faild to copy.", { position: "top-center", duration: 2000 });
+    }
+  };
 
   const handleDelete = async () => {
     try {
