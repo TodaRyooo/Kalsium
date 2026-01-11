@@ -14,9 +14,19 @@ import { identityAtom, notesAtom, passwordsAtom, selectedPasswordAtom } from "@/
 
 import useSWRMutation from "swr/mutation";
 import { postReq } from "@/lib/fetcher";
+import passGenerator from "@/app/(dashboard)/generator/_processes/pass-generator";
+import { useState } from "react";
 
 const SUPPORTED_LENGTHS = [8, 12, 16, 24, 32, 64] as const;
 const GENERATION_COUNTS = [1, 5, 10, 20, 50] as const;
+
+interface Conditions {
+  len: number;
+  cnt: number;
+  uppr: boolean;
+  symb: boolean;
+  nums: boolean;
+}
 
 export const GeneratorForm = () => {
   const [passwords, setPasswords] = useAtom(passwordsAtom);
@@ -24,20 +34,38 @@ export const GeneratorForm = () => {
   const [identity, setIdentity] = useAtom(identityAtom);
   const [notes, setNotes] = useAtom(notesAtom);
 
-  const { trigger } = useSWRMutation("/bonds", postReq<PostBondArgs>);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [len, setLen] = useState<number>(16);
+  const [cnt, setCnt] = useState<number>(10);
+  const [uppr, setUppr] = useState<boolean>(false);
+  const [symb, setSymb] = useState<boolean>(false);
+  const [nums, setNums] = useState<boolean>(false);
+
+  const { trigger, isMutating } = useSWRMutation("/bonds", postReq<PostBondArgs>);
 
   const handleCreate = async () => {
-    if (!selectedPassword) return;
-    await trigger({ identity, pass: selectedPassword, note: notes });
-    console.log("done");
+    if (!selectedPassword || isMutating || isSuccess) return;
+
+    try {
+      await trigger({ identity, pass: selectedPassword, note: notes });
+
+      setIsSuccess(true);
+
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 1000);
+    } catch (e) {
+      console.error("Creation failed", e);
+    }
   };
 
   const handleGenerate = () => {
-    setPasswords(["Qwerty123", "Asdfgh456", "Zxcvbn789", "Kalsium2026", "Vault_Secret"]);
+    const conds: Conditions = { len, cnt, uppr, symb, nums };
+    setPasswords(() => passGenerator(conds));
   };
 
   return (
-    <div className="grid grid-cols-1 items-start gap-8 xl:grid-cols-3">
+    <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-3">
       {/* --- 1. 左側: Settings --- */}
       <div className="flex w-full flex-col lg:justify-self-center">
         <Text variant="h2" className="text-lg font-semibold">
@@ -48,7 +76,7 @@ export const GeneratorForm = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Length</Label>
-                <Select defaultValue="16">
+                <Select value={len.toString()} onValueChange={(v) => setLen(Number(v))}>
                   <SelectTrigger className="font-mono">
                     <SelectValue />
                   </SelectTrigger>
@@ -63,7 +91,7 @@ export const GeneratorForm = () => {
               </div>
               <div className="space-y-2">
                 <Label>Count</Label>
-                <Select defaultValue="1">
+                <Select value={cnt.toString()} onValueChange={(v) => setCnt(Number(v))}>
                   <SelectTrigger className="font-mono">
                     <SelectValue />
                   </SelectTrigger>
@@ -77,17 +105,32 @@ export const GeneratorForm = () => {
                 </Select>
               </div>
             </div>
+
             <Separator />
+
             <div className="space-y-3">
-              {["uppercase", "symbols", "numbers"].map((id) => (
-                <div key={id} className="flex items-center justify-between">
-                  <Label htmlFor={id} className="capitalize">
-                    {id}
-                  </Label>
-                  <Switch id={id} defaultChecked />
-                </div>
-              ))}
+              <div className="flex items-center justify-between">
+                <Label htmlFor="uppercase" className="capitalize">
+                  Uppercase
+                </Label>
+                <Switch id="uppercase" checked={uppr} onCheckedChange={setUppr} />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label htmlFor="symbols" className="capitalize">
+                  Symbols
+                </Label>
+                <Switch id="symbols" checked={symb} onCheckedChange={setSymb} />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <Label htmlFor="numbers" className="capitalize">
+                  Numbers
+                </Label>
+                <Switch id="numbers" checked={nums} onCheckedChange={setNums} />
+              </div>
             </div>
+
             <Button onClick={handleGenerate} className="w-full">
               Generate
             </Button>
@@ -118,7 +161,7 @@ export const GeneratorForm = () => {
                 <div className="flex items-center justify-between">
                   <code
                     className={cn(
-                      "font-mono text-sm transition-colors",
+                      "font-mono text-sm break-all transition-colors",
                       selectedPassword === pw ? "font-bold text-slate-900" : "text-slate-600",
                     )}
                   >
@@ -168,11 +211,14 @@ export const GeneratorForm = () => {
               />
             </div>
             <Button
-              className="w-full bg-slate-900 text-white hover:bg-slate-800"
-              disabled={!selectedPassword}
+              className={cn(
+                "w-full transition-all duration-300",
+                isSuccess ? "bg-green-600 hover:bg-green-600" : "bg-slate-900 hover:bg-slate-800",
+              )}
+              disabled={!selectedPassword || isMutating || isSuccess}
               onClick={handleCreate}
             >
-              Create Bond
+              {isMutating ? "Creating..." : isSuccess ? "Success!" : "Create Bond"}
             </Button>
           </CardContent>
         </Card>
