@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const FormScheme = z.object({
+export const SignUpScheme = z.object({
   username: z.email({ message: "You must enter it in your email address format." }),
   password: z
     .string()

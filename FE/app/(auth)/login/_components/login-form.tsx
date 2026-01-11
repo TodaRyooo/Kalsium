@@ -9,13 +9,9 @@ import { useAtom } from "jotai";
 import useSWRMutation from "swr/mutation";
 import { postReq } from "@/lib/fetcher";
 import { toast } from "sonner";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { FormScheme } from "@/lib/valids/login";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form } from "@/components/ui/form";
-import { CustomFormField } from "@/components/composites/form";
+import React, { useEffect } from "react";
+import { Text } from "@/components/composites/text";
+import { UserRoundPlus } from "lucide-react";
 
 export const LoginForm = () => {
   const router = useRouter();
@@ -29,18 +25,12 @@ export const LoginForm = () => {
     if (token || (cache && cache !== "null")) router.push("/generator");
   }, [token, router]);
 
-  const form = useForm<z.infer<typeof FormScheme>>({
-    resolver: zodResolver(FormScheme),
-    mode: "onChange",
-    defaultValues: {
-      username: "",
-      password: "",
-    },
-  });
-
-  const handleSignIn = async (v: z.infer<typeof FormScheme>) => {
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const body = Object.fromEntries(formData);
     try {
-      const res = await trigger(v);
+      const res = await trigger(body);
       setToken(res.token);
       setUser(res.user);
       toast.success("Login successful!");
@@ -51,24 +41,21 @@ export const LoginForm = () => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSignIn)} className="grid gap-6">
-        <div className="grid gap-4">
-          <CustomFormField
-            control={form.control}
-            fieldName="username"
-            renderChildren={(field) => <Input id="username" type="email" placeholder="Email Address" {...field} />}
-          />
+    <form onSubmit={handleSignIn} className="grid gap-6">
+      <div className="grid gap-4">
+        <Input name="username" id="username" type="email" placeholder="Email Address" />
+        <Input name="password" id="password" type="password" placeholder="Password" />
+      </div>
 
-          <CustomFormField
-            control={form.control}
-            fieldName="password"
-            renderChildren={(field) => <Input id="password" type="password" placeholder="Password" {...field} />}
-          />
-        </div>
-        <Separator className="bg-slate-200" />
-        <Button type="submit">{isMutating ? "Signing In..." : "Sign In"}</Button>
-      </form>
-    </Form>
+      <div className="flex items-center gap-1 cursor-pointer">
+        <UserRoundPlus size={20} />
+        <Text variant="a" onClick={() => router.push("/signup")}>
+          Haven't created an account yet?
+        </Text>
+      </div>
+
+      <Separator className="bg-slate-200" />
+      <Button type="submit">{isMutating ? "Signing In..." : "Sign In"}</Button>
+    </form>
   );
 };
