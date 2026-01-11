@@ -28,10 +28,6 @@ export const BondCard = ({ bond }: { bond: Bond }) => {
         <div className="flex flex-col gap-2">
           <Text className="pr-8 font-medium text-slate-900">{bond.identity}</Text>
 
-          <div className="rounded border border-slate-100 bg-slate-50 p-2">
-            <code className="block font-mono text-sm break-all text-slate-700">{bond.pass}</code>
-          </div>
-
           {bond.note && (
             <Text variant="muted" className="text-xs">
               {bond.note}
