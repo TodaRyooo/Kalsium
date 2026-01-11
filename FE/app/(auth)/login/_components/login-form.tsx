@@ -9,13 +9,19 @@ import { useAtom } from "jotai";
 import useSWRMutation from "swr/mutation";
 import { postReq } from "@/lib/fetcher";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 export const LoginForm = () => {
   const router = useRouter();
-  const [, setToken] = useAtom(tokenAtom);
+  const [token, setToken] = useAtom(tokenAtom);
   const [, setUser] = useAtom(currentUserAtom);
 
   const { trigger, isMutating } = useSWRMutation("/auth/login", postReq);
+
+  useEffect(() => {
+    const cache = localStorage.getItem("kalsium_token");
+    if (token || (cache && cache !== "null")) router.push("/generator");
+  }, [token, router]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
