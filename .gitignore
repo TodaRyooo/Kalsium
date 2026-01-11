@@ -44,6 +44,7 @@ FE/.bun-build/
 
 # --- Backend (Go / GORM / SQLite) ---
 # Database (SQLite binary files)
+BE/tmp/
 BE/kalsium.db
 BE/kalsium.db-journal
 BE/kalsium.db-wal

@@ -29,3 +29,19 @@ services:
       - GO_ENV=development
     stdin_open: true
     tty: true
+
+  db:
+    image: postgres:15-alpine
+    container_name: kalsium-db
+    restart: always
+    environment:
+      POSTGRES_USER: kalsium_user
+      POSTGRES_PASSWORD: kalsium_password
+      POSTGRES_DB: kalsium_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - kalsium-db-data:/var/lib/postgresql/data
+
+volumes:
+  kalsium-db-data:

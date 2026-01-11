@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
+	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
 	"github.com/joho/godotenv"
@@ -18,7 +19,13 @@ import (
 )
 
 func main() {
-	db, err := gorm.Open(sqlite.Open("kalsium.db"), &gorm.Config{})
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
+	}
+
+	dsn := os.Getenv("DATABASE_URL")
+	// db, err := gorm.Open(sqlite.Open("kalsium.db"), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("faild to connect database")
 	}
