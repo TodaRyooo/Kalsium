@@ -19,7 +19,7 @@ export const BondCard = ({ bond }: { bond: Bond }) => {
       key={bond.id}
       className="group relative w-full max-w-none overflow-hidden transition-all hover:border-slate-300"
     >
-      <div className="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100">
+      <div className="absolute top-2 right-2 opacity-100 transition-opacity group-hover:opacity-100 lg:opacity-0 lg:group-hover:opacity-100">
         <EditBondDialog bond={bond} />
         <DeleteBondDialog bond={bond} />
       </div>
