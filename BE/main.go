@@ -3,11 +3,13 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/todaryooo/kalsium-be/config"
@@ -21,15 +23,16 @@ func main() {
 		panic("faild to connect database")
 	}
 
-	db.AutoMigrate(&models.Bond{})
+	db.AutoMigrate(&models.Bond{}, &models.User{})
 
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using system environment variables")
 	}
 
 	masterKey, err := config.LoadMasterKey()
-	if err != nil {
-		log.Fatalf("Failed to load crypto key: %v", err)
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if err != nil || jwtSecret == "" {
+		log.Fatalf("Failed to load keys: %v", err)
 	}
 
 	e := echo.New()
@@ -41,6 +44,8 @@ func main() {
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 	}))
 
+	log.Printf("DEBUG: JWT Secret loaded. Length: %d", len(jwtSecret))
+
 	e.GET("/health", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]string{
 			"status":  "ok",
@@ -48,11 +53,21 @@ func main() {
 		})
 	})
 
-	// ルーティング
-	e.GET("/bonds", handlers.GetBonds(db, masterKey))
-	e.POST("/bonds", handlers.PostBond(db, masterKey))
-	e.PUT("/bonds/:id", handlers.UpdateBond(db))
-	e.DELETE("/bonds/:id", handlers.DeleteBond(db))
+	// authルーティング
+	e.POST("/auth/signup", handlers.SignUp(db))
+	e.POST("/auth/login", handlers.Login(db, jwtSecret))
+
+	r := e.Group("")
+	r.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte(jwtSecret),
+		ContextKey: "user",
+	}))
+
+	// bondルーティング
+	r.GET("/bonds", handlers.GetBonds(db, masterKey))
+	r.POST("/bonds", handlers.PostBond(db, masterKey))
+	r.PUT("/bonds/:id", handlers.UpdateBond(db))
+	r.DELETE("/bonds/:id", handlers.DeleteBond(db))
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
