@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"gorm.io/driver/postgres"
-	// "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
 	"github.com/joho/godotenv"
@@ -19,48 +18,43 @@ import (
 )
 
 func main() {
+	// 環境変数の読み込み
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found")
 	}
 
+	// DB接続
 	dsn := os.Getenv("DATABASE_URL")
-	// db, err := gorm.Open(sqlite.Open("kalsium.db"), &gorm.Config{})
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("faild to connect database")
+		panic("failed to connect database")
 	}
-
 	db.AutoMigrate(&models.Bond{}, &models.User{})
 
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found, using system environment variables")
-	}
-
+	// 鍵とシークレットの読み込み
 	masterKey, err := config.LoadMasterKey()
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if err != nil || jwtSecret == "" {
 		log.Fatalf("Failed to load keys: %v", err)
 	}
 
+	// Echoインスタンスの作成
 	e := echo.New()
 
+	// ミドルウェアの設定（ルーティングより前に行う）
 	e.Use(middleware.RequestLogger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3000"},
-		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
+		AllowOrigins: []string{"https://kalsium.vercel.app", "http://localhost:3000"},
+		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS}, // OPTIONSはCORSプリフライトに必須
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
-	log.Printf("DEBUG: JWT Secret loaded. Length: %d", len(jwtSecret))
-
+	// ルーティングの定義
 	e.GET("/health", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{
-			"status":  "ok",
-			"message": "Kalsium Backend is running!",
-		})
+		return c.JSON(http.StatusOK, map[string]string{"status": "ok"})
 	})
 
-	// authルーティング
 	e.POST("/auth/signup", handlers.SignUp(db))
 	e.POST("/auth/login", handlers.Login(db, jwtSecret))
 
@@ -70,11 +64,15 @@ func main() {
 		ContextKey: "user",
 	}))
 
-	// bondルーティング
 	r.GET("/bonds", handlers.GetBonds(db, masterKey))
 	r.POST("/bonds", handlers.PostBond(db, masterKey))
 	r.PUT("/bonds/:id", handlers.UpdateBond(db))
 	r.DELETE("/bonds/:id", handlers.DeleteBond(db))
 
-	e.Logger.Fatal(e.Start(":8080"))
+	// サーバーの起動（★必ず最後に記述する）
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	e.Logger.Fatal(e.Start(":" + port))
 }
